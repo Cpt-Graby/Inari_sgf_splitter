@@ -3,7 +3,7 @@ from tkinter import ttk
 from tkinter import filedialog
 
 
-class Sgf2Split():
+class Sgf2Split:
     """Object to split the sgf file"""
     def __init__(self, file_path, path_dir, new_name, starting_number=1, length_number=2, player_white="White",
                  player_black="Black"):
@@ -13,19 +13,20 @@ class Sgf2Split():
         self.length_number = length_number
         self.player_white = player_white
         self.player_black = player_black
-        self.header = f"(;GM[1]FF[4]CA[UTF-8]AP[Inari Sgf_splitter 0.1]ST[2]RU[Japanese]SZ[19]KM[0.00]PW[{player_white}]PB[{player_black}] "
+        self.header = f"(;GM[1]FF[4]CA[UTF-8]AP[Inari Sgf_splitter 0.1]ST[2]RU[Japanese]SZ[19]KM[0.00]PW[{player_white}]PB[{player_black}]"
 
         with open(file_path, 'r') as f:
             self.sgf = f.read()
-        self.split()
+        self.variation = self.split()
         self.saving_new_file()
 
     def split(self):
         """Splitting the string of the sgf file and putting all the variation
         into self.variation"""
         # On travaille sur le sgf.
-        self.variation = self.sgf.split("(;")
-        del self.variation[0:2]
+        variation = self.sgf.split("(;")
+        del variation[0:2]
+        return variation
         # self.number_variation = len(self.variation)
 
     def saving_new_file(self):
@@ -53,7 +54,7 @@ class App(ttk.Frame):
         self.set_file()
         self.set_dir()
 
-        self.new_name_label= tk.ttk.Label(self, text="Sgf_prefix:")
+        self.new_name_label = tk.ttk.Label(self, text="Sgf_prefix:")
         self.new_name_label.grid(column=0, row=5)
 
         self.new_name_contents = tk.StringVar()
@@ -66,10 +67,10 @@ class App(ttk.Frame):
 
         self.starting_number_contents = tk.StringVar()
         self.starting_number_contents.set("01")
-        self.starting_number_contents = tk.ttk.Entry(self, textvariable=self.starting_number_contents)
-        self.starting_number_contents.grid(column=4, row=5)
+        self.starting_number_entry = tk.ttk.Entry(self, textvariable=self.starting_number_contents)
+        self.starting_number_entry.grid(column=4, row=5)
 
-        self.start_process_button = tk.ttk.Button(self, text= "Start splitting", command=self.start_process)
+        self.start_process_button = tk.ttk.Button(self, text="Start splitting", command=self.start_process)
         self.start_process_button.grid(column=1, row=6)
 
         # Setting the parameter so that the windows and the frame are dynamic
@@ -83,10 +84,9 @@ class App(ttk.Frame):
         self.rowconfigure(3, weight=1)
 
     def start_process(self):
-        new_sgf = Sgf2Split(self.pathfile.get(), self.path_save_dir.get(), self.new_name_entry.get(), int(self.starting_number_contents.get()))
-        new = tk.Message( text="Fini!")
+        Sgf2Split(self.pathfile.get(), self.path_save_dir.get(), self.new_name_entry.get(), int(self.starting_number_contents.get()))
+        new = tk.Message(text="Fini!")
         new.grid()
-
 
     def set_file(self):
         """Function to set up all the button and label to ask the file
@@ -104,7 +104,7 @@ class App(ttk.Frame):
         self.label_path.grid(column=1, row=1, sticky="e, w", padx=5, pady=5)
 
     def set_dir(self):
-        """Function to set up all the button and label to ask the directory 
+        """Function to set up all the button and label to ask the directory
         were we are going to save all the file."""
         # Setting up the instructions for the directory in case it is not clear.
         self.instruction_dir = tk.ttk.Label(self, text="Please select the directory where we'll save the new sgf:")
